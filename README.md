@@ -1,3 +1,9 @@
+Fork of a fork. Super old code, which I'm seeing if I can bring back to life.
+
+
+
+----
+
 ## Lloyds TSB screen scraper
 
 I bank with Lloyds TSB - I have my current account and credit card with them. Like most online banking services though, they're not to up-to-date on APIs and the like. After looking around online, I found that there were a couple of scripts that people had built, but I didn't have much luck with them myself. So I decided to build my own screen scraper.

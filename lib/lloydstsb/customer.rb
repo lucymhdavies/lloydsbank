@@ -57,7 +57,7 @@ module LloydsTSB
           (#{@agent.page.search('.formSubmitError').text})"
       end
       
-      @name = @agent.page.at('span.name').text
+      @name = @agent.page.at('span.m-hf-02-name').text
       
       if @agent.page.title == 'Lloyds Bank - Mandatory Messages'
         @agent.page.forms[0].click_button
@@ -86,11 +86,16 @@ module LloydsTSB
       # We're in, now to find the accounts...
       accounts = []
       doc = Nokogiri::HTML(@agent.page.body, 'UTF-8')
-       doc.css('li.clearfix').each do |account|
+       doc.css('div.des-m-sat-xx-account-tile').each do |account|
         # This is an account in the table - let's read out the details...
 
         next if account.css('p.accountMsg').text =~ /^Remaining allowance:/
         next if account.css('p.balance').text.empty? # Scottish Widows investments etc.
+
+        puts "ACCOUNT:"
+        puts account.css('p.balance')
+
+# TODO: the below doesn't really work. Fix it
 
         acct = {
           name: account.css('a')[0].text,
@@ -98,11 +103,12 @@ module LloydsTSB
             .gsub("£", "").gsub(",", "").gsub('Nil','0').to_f,
           limit: account.css('p.accountMsg').text.empty? ? 0.00 : account.css('p.accountMsg').text.split(" ")[2]
             .gsub("£", "").gsub(",", "").to_f,
-          viewpage_url: 'https://secure2.lloydstsb.co.uk' + account.css('a')[0]['href'],
+          viewpage_url: 'https://secure.lloydsbank.co.uk/' + account.css('a')[0]['href'],
           agent: @agent,
           transactions: []
           }
 
+=begin
         # Now we need to find the recent transactions for the account...We'll
         # go to the account's transactions page and read the table
         account_agent = @agent.dup
@@ -177,6 +183,7 @@ module LloydsTSB
             acct[:transactions] << LloydsTSB::Transaction.new(data)
           end
         end
+=end
 
         accounts << LloydsTSB::Account.new(acct)
       end
